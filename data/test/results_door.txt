@@ -1,0 +1,75 @@
+SIFT_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints1: 1643
+Number of keypoints2: 1753
+Absolute inliers: 428
+Relative inliers: 0.260499
+SIFT_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints1: 1643
+Number of keypoints2: 1753
+Absolute inliers: 16
+Relative inliers: 0.00973828
+SIFT_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints1: 1643
+Number of keypoints2: 1753
+Absolute inliers: 239
+Relative inliers: 0.146267
+SURF_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints1: 1081
+Number of keypoints2: 1112
+Absolute inliers: 220
+Relative inliers: 0.203515
+SURF_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints1: 1081
+Number of keypoints2: 1112
+Absolute inliers: 241
+Relative inliers: 0.222942
+SURF_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints1: 1081
+Number of keypoints2: 1112
+Absolute inliers: 126
+Relative inliers: 0.117209
+STAR_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints1: 911
+Number of keypoints2: 1168
+Absolute inliers: 288
+Relative inliers: 0.316136
+STAR_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints1: 911
+Number of keypoints2: 1168
+Absolute inliers: 16
+Relative inliers: 0.0175631
+STAR_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints1: 911
+Number of keypoints2: 1168
+Absolute inliers: 165
+Relative inliers: 0.18112
+MSER_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints1: 327
+Number of keypoints2: 425
+Absolute inliers: 65
+Relative inliers: 0.198777
+MSER_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints1: 327
+Number of keypoints2: 425
+Absolute inliers: 51
+Relative inliers: 0.155963
+MSER_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints1: 327
+Number of keypoints2: 425
+Absolute inliers: 51
+Relative inliers: 0.159375
+FAST_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints1: 3626
+Number of keypoints2: 3950
+Absolute inliers: 1121
+Relative inliers: 0.309156
+FAST_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints1: 3626
+Number of keypoints2: 3950
+Absolute inliers: 22
+Relative inliers: 0.00606729
+FAST_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints1: 3626
+Number of keypoints2: 3950
+Absolute inliers: 301
+Relative inliers: 0.0857306

@@ -1,0 +1,2 @@
+rosrun data_acquisition data_acquisition_diff_change_node src/data_acquisition/data/image_pairs/source_change.png src/data_acquisition/data/image_pairs/target_change.png 90 src/data_acquisition/data/example_change_detection/diff_img_change.png src/data_acquisition/data/example_change_detection/diff_mask_change.png
+rosrun data_acquisition data_acquisition_kp_change_node src/data_acquisition/data/image_pairs/source_change.png src/data_acquisition/data/image_pairs/target_change.png src/data_acquisition/data/example_change_detection/kp_change_detection_change.png

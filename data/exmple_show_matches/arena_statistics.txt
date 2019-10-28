@@ -1,0 +1,90 @@
+SIFT_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints: 453, 547
+Descriptor size: 128
+SIFT_detector_SIFT_extractor_FLANN_matcher.png
+Number of keypoints: 453, 547
+Descriptor size: 128
+SIFT_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints: 453, 547
+Descriptor size: 64
+SIFT_detector_SURF_extractor_FLANN_matcher.png
+Number of keypoints: 453, 547
+Descriptor size: 64
+SIFT_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints: 453, 547
+Descriptor size: 32
+SIFT_detector_BRIEF_extractor_FLANN_matcher.png
+Number of keypoints: 453, 547
+Descriptor size: 32
+SURF_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints: 891, 998
+Descriptor size: 128
+SURF_detector_SIFT_extractor_FLANN_matcher.png
+Number of keypoints: 891, 998
+Descriptor size: 128
+SURF_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints: 891, 998
+Descriptor size: 64
+SURF_detector_SURF_extractor_FLANN_matcher.png
+Number of keypoints: 891, 998
+Descriptor size: 64
+SURF_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints: 891, 998
+Descriptor size: 32
+SURF_detector_BRIEF_extractor_FLANN_matcher.png
+Number of keypoints: 891, 998
+Descriptor size: 32
+STAR_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints: 1339, 1599
+Descriptor size: 128
+STAR_detector_SIFT_extractor_FLANN_matcher.png
+Number of keypoints: 1339, 1599
+Descriptor size: 128
+STAR_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints: 1339, 1599
+Descriptor size: 64
+STAR_detector_SURF_extractor_FLANN_matcher.png
+Number of keypoints: 1339, 1599
+Descriptor size: 64
+STAR_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints: 1339, 1599
+Descriptor size: 32
+STAR_detector_BRIEF_extractor_FLANN_matcher.png
+Number of keypoints: 1339, 1599
+Descriptor size: 32
+MSER_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints: 328, 333
+Descriptor size: 128
+MSER_detector_SIFT_extractor_FLANN_matcher.png
+Number of keypoints: 328, 333
+Descriptor size: 128
+MSER_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints: 328, 333
+Descriptor size: 64
+MSER_detector_SURF_extractor_FLANN_matcher.png
+Number of keypoints: 328, 333
+Descriptor size: 64
+MSER_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints: 328, 333
+Descriptor size: 32
+MSER_detector_BRIEF_extractor_FLANN_matcher.png
+Number of keypoints: 328, 333
+Descriptor size: 32
+FAST_detector_SIFT_extractor_BruteForce_matcher.png
+Number of keypoints: 1211, 903
+Descriptor size: 128
+FAST_detector_SIFT_extractor_FLANN_matcher.png
+Number of keypoints: 1211, 903
+Descriptor size: 128
+FAST_detector_SURF_extractor_BruteForce_matcher.png
+Number of keypoints: 1211, 903
+Descriptor size: 64
+FAST_detector_SURF_extractor_FLANN_matcher.png
+Number of keypoints: 1211, 903
+Descriptor size: 64
+FAST_detector_BRIEF_extractor_BruteForce_matcher.png
+Number of keypoints: 1211, 903
+Descriptor size: 32
+FAST_detector_BRIEF_extractor_FLANN_matcher.png
+Number of keypoints: 1211, 903
+Descriptor size: 32

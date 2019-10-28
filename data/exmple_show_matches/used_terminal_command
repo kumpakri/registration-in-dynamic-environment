@@ -1,0 +1,1 @@
+rosrun data_acquisition data_acquisition_show_matches_node src/data_acquisition/data/image_pairs/source_arena.png src/data_acquisition/data/image_pairs/target_arena.png src/data_acquisition/data/example_show_matches/ARENA >> src/data_acquisition/data/example_show_matches/arena_statistics.txt

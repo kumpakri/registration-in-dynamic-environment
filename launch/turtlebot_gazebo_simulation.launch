@@ -1,0 +1,21 @@
+<launch>
+
+  <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch"/>
+  <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
+
+  <node pkg="gmapping" name="slam_gmapping" type="slam_gmapping">
+        <!-- How long (s) between updates to the map, default: 5.0 -->
+	<param name="map_udpate_interval" value="5.0"/>
+	<!-- Maximum usable range of the laser, default: 80.0 -->
+	<param name="maxUrange" value="80.0"/> 
+	<!-- Initial map size, default: [100.0, 100.0, -100.0, -100.0] -->
+	<param name="xmin" value="100.0"/> 
+	<param name="ymin" value="100.0"/> 
+	<param name="xmax" value="-100.0"/> 
+	<param name="ymax" value="-100.0"/> 
+	<!-- Resolution of the map, default: 0.05-->
+	<param name="delta" value="0.05"/> 
+	<!-- Default map size: 200x200, real world area: 4000x4000 -->
+  </node>
+
+</launch>

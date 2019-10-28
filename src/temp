@@ -1,0 +1,591 @@
+/*  // sorting algorithm testing
+	std::vector<int> v;
+	v.reserve( 5 );
+	std::vector<int> ind;
+	ind.reserve( 5 );
+	ind.push_back(0);
+	ind.push_back(1);
+	ind.push_back(2);
+	ind.push_back(3);
+	ind.push_back(4);
+
+	v.push_back(5);
+	v.push_back(8);
+	v.push_back(1);
+	v.push_back(3);
+	v.push_back(3);
+	print_out_vector(ind);
+	sort_vector(v, &ind);
+	print_out_vector(ind);
+*/
+
+	// sending ros message
+	/**
+	* A count of how many messages have been sent. This is used to create
+	* a unique string for each message.
+	*/
+
+	// int count = 0;
+	// while (ros::ok())
+	// {
+	// 	std_msgs::String msg;
+
+	// 	msg.data = result.str();
+	// 	ROS_INFO("%s", msg.data.c_str());
+	// 	pos_score.publish(msg);
+
+	// 	ros::spinOnce();
+	// 	loop_rate.sleep();
+	// 	++count;
+	// }
+
+
+	// //finding maximum angle change in the data
+	// std::string line;
+
+	// std::ifstream position_file (argv[1]);
+	// if( ! position_file )	
+	// {
+	// 	std::cout << "Error opening file for reading\n" << std::endl ;
+	// 	return -1 ;
+	// }
+
+	// int sec;
+	// float pos_x, pos_y, yaw, conv_yaw, conv_last_yaw;
+
+	// float max_difference = 0;
+	// float last_yaw=42;
+	
+	// while (position_file >> sec >> pos_x >> pos_y >> yaw)
+	// {
+	// 	if( last_yaw>6 )
+	// 	{
+	// 		last_yaw = yaw;
+	// 		conv_last_yaw = yaw;
+	// 	} else {
+	// 		conv_yaw = convert_euler2continuous(yaw, last_yaw);
+	// 		if ( max_difference < std::abs( conv_yaw - conv_last_yaw ) ) {
+	// 			max_difference = std::abs( conv_yaw - conv_last_yaw );
+	// 		}
+	// 		last_yaw = yaw;
+	// 		conv_last_yaw = conv_yaw;
+	// 	}
+		 
+	// }
+	// std::cout << "Max dif: " << max_difference << std::endl;
+	// position_file.close();
+	// return 0;
+
+
+
+
+
+	/*
+	* 
+	* create BoW descriptor file for A variant
+	*
+	*/
+	int main(int argc, char **argv) 
+{
+	//make SIFT descriptor files
+	char* posfile1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/interpolated_positions_CONT.txt";
+	char* posfile2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/interpolated_positions_CONT.txt";
+	char* posfile3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/interpolated_positions_CONT.txt";
+
+	char* imagefolder1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/images/";
+	char* imagefolder2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/images/";
+	char* imagefolder3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/images/";
+
+	char* SIFTdescrfile1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/SIFT_decriptors_of_set.txt";
+	char* SIFTdescrfile2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/SIFT_decriptors_of_set.txt";
+	char* SIFTdescrfile3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/SIFT_decriptors_of_set.txt";
+
+	char* BoWdescrfile1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/BoW_decriptors_of_set.txt";
+	char* BoWdescrfile2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/BoW_decriptors_of_set.txt";
+	char* BoWdescrfile3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/BoW_decriptors_of_set.txt";
+
+	float nFeatures = atof(argv[1]);
+	float nOctaveLayers = atof(argv[2]);
+	float contrastThreshold = atof(argv[3]);
+	float edgeThreshold = atof(argv[4]);
+	float sigma = atof(argv[5]);
+
+	char *ptrpositions[3] = {posfile1, posfile2, posfile3};
+	char *ptrimages[3] = {imagefolder1, imagefolder2, imagefolder3};
+//	char *ptrSIFTdescrfile[3] = {SIFTdescrfile1, SIFTdescrfile2};//, SIFTdescrfile3};
+	char *ptrBoWdescrfile[3] = {BoWdescrfile1, BoWdescrfile2, BoWdescrfile3};
+
+	//train_BoW(ptrSIFTdescrfile,&dictionary);
+
+	cv::FeatureDetector* detector;
+	detector = new cv::SiftFeatureDetector( nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+
+	cv::DescriptorExtractor* extractor;
+	extractor = new cv::SiftDescriptorExtractor();	
+
+	cv::DescriptorMatcher* matcher;
+	// FLANN - fast library of aproximate nearest neighbors
+	matcher = new cv::FlannBasedMatcher(); //BFMatcher() Brute Force - slow but precise
+
+	int dictionarySize = 1000; // < number of descriptors
+	cv::TermCriteria tc(CV_TERMCRIT_ITER,100,0.001);
+	int retries=1;
+	int flags=cv::KMEANS_PP_CENTERS;
+	cv::BOWKMeansTrainer bowTrainer(dictionarySize,tc,retries,flags);
+
+	cv::Mat descriptors;
+
+	for ( int i = 0; i<2; i++)
+	{
+		char* posfile = ptrpositions[i];
+		char* imagefolder = ptrimages[i];
+
+		std::string line;
+
+		std::ifstream position_file (posfile);
+		if( ! position_file )	
+		{
+			std::cout << "Error opening file for reading\n" << std::endl ;
+			return -1 ;
+		}
+
+		int sec;
+		float pos_x, pos_y, yaw;
+		
+		while (position_file >> sec >> pos_x >> pos_y >> yaw)
+		{
+			//search for image taken at the same time
+			char im_path[100];
+			snprintf(im_path, sizeof im_path, "%s/image_%d.png", imagefolder,sec);
+
+			if (file_exists(im_path))
+			{
+				cv::Mat image, descriptors;
+				image = cv::imread(im_path, CV_LOAD_IMAGE_GRAYSCALE);
+
+				std::vector<cv::KeyPoint> keypoints;
+				detector->detect( image, keypoints );
+
+				extractor->compute(image, keypoints, descriptors);
+
+				if(descriptors.rows > 0)
+				{bowTrainer.add(descriptors);}
+
+			}
+		}
+		position_file.close();
+	}
+	cv::Mat dictionary=bowTrainer.cluster();
+
+	cv::BOWImgDescriptorExtractor bowDE(extractor,matcher);
+	bowDE.setVocabulary(dictionary);
+
+	std::vector<float> bow_vec; 
+
+	for ( int i = 0; i<3; i++)
+	{
+		char* posfile = ptrpositions[i];
+		char* imagefolder = ptrimages[i];
+		char* descrfile = ptrBoWdescrfile[i];
+
+		std::ifstream position_file (posfile);
+		if( ! position_file )	
+		{
+			std::cout << "Error opening file for reading\n" << std::endl ;
+			return -1 ;
+		}
+
+		std::ofstream descriptor_file(descrfile);
+		if( ! descriptor_file )	
+		{
+			std::cout << "Error opening file for writing\n" << std::endl ;
+			return -1 ;
+		}
+
+		int sec;
+		float pos_x, pos_y, yaw;
+
+		while (position_file >> sec >> pos_x >> pos_y >> yaw)
+		{
+			//search for image taken at the same time
+			char im_path[100];
+			snprintf(im_path, sizeof im_path, "%s/image_%d.png", imagefolder,sec);
+
+			if (file_exists(im_path))
+			{
+				cv::Mat image, BoWdescriptor;
+				image = cv::imread(im_path, CV_LOAD_IMAGE_GRAYSCALE);
+
+				std::vector<cv::KeyPoint> keypoints;
+
+				detector->detect( image, keypoints );
+
+				bowDE.compute(image,keypoints,BoWdescriptor);
+				if(BoWdescriptor.rows > 0)
+				{
+					bow_vec = BoWdescriptor.row(0);
+					//write in the descriptor file
+					descriptor_file << pos_x << " " << pos_y << " " << yaw << " ";
+					std::ostream_iterator<float> output_iterator(descriptor_file, " ");
+			    	std::copy(bow_vec.begin(), bow_vec.end(), output_iterator);
+					descriptor_file << "\n";
+				}
+
+				image.release();
+				BoWdescriptor.release();
+
+			}
+		}
+		position_file.close();
+		descriptor_file.close();
+	    
+	}
+
+	return 0;
+}
+
+
+/*
+*
+* CREATE BoW DESCRIPTOR FILE FOR B VARIANT
+*
+*/
+int main(int argc, char **argv) 
+{
+	//make SIFT descriptor files
+
+	char* posfile_train_B1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/interpolated_positions_CONT_train.txt";
+	char* posfile_train_B2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/interpolated_positions_CONT_train.txt";
+	char* posfile_train_B3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/interpolated_positions_CONT_train.txt";
+
+	char* posfile_test_B1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/interpolated_positions_CONT_test.txt";
+	char* posfile_test_B2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/interpolated_positions_CONT_test.txt";
+	char* posfile_test_B3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/interpolated_positions_CONT_test.txt";
+
+	char* imagefolder1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/images/";
+	char* imagefolder2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/images/";
+	char* imagefolder3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/images/";
+
+	char* BoW_train_descrfile1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/BoW_decriptors_B_train.txt";
+	char* BoW_train_descrfile2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/BoW_decriptors_B_train.txt";
+	char* BoW_train_descrfile3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/BoW_decriptors_B_train.txt";
+
+	char* BoW_test_descrfile1 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1446/BoW_decriptors_B_test.txt";
+	char* BoW_test_descrfile2 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1451/BoW_decriptors_B_test.txt";
+	char* BoW_test_descrfile3 = "/home/ubuntu/catkin_ws/src/data_acquisition/data/processed_data/20180104_1454/BoW_decriptors_B_test.txt";
+
+	float nFeatures = atof(argv[1]);
+	float nOctaveLayers = atof(argv[2]);
+	float contrastThreshold = atof(argv[3]);
+	float edgeThreshold = atof(argv[4]);
+	float sigma = atof(argv[5]);
+
+	char *ptrimages[3] = {imagefolder1, imagefolder2, imagefolder3};
+	char *ptrimages_make[6] = {imagefolder1, imagefolder2, imagefolder3,imagefolder1, imagefolder2, imagefolder3};
+
+	char *ptr_train_pos[3] = {posfile_train_B1, posfile_train_B2, posfile_train_B3};
+	char *ptr_make_pos[6] = {posfile_test_B1, posfile_test_B2, posfile_test_B3, posfile_train_B1, posfile_train_B2, posfile_train_B3};
+
+	char *ptr_train_BoW[3] = {BoW_train_descrfile1, BoW_train_descrfile2, BoW_train_descrfile3};
+	char *ptr_make_BoW[6] = {BoW_test_descrfile1, BoW_test_descrfile2, BoW_test_descrfile3,BoW_train_descrfile1, BoW_train_descrfile2, BoW_train_descrfile3};
+
+	
+
+// ===== SETTINGS =======================
+	cv::FeatureDetector* detector;
+	detector = new cv::SiftFeatureDetector( nFeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+
+	cv::DescriptorExtractor* extractor;
+	extractor = new cv::SiftDescriptorExtractor();	
+
+	cv::DescriptorMatcher* matcher;
+	// FLANN - fast library of aproximate nearest neighbors
+	matcher = new cv::FlannBasedMatcher(); //BFMatcher() Brute Force - slow but precise
+
+	int dictionarySize = 1000; // < number of descriptors
+	cv::TermCriteria tc(CV_TERMCRIT_ITER,100,0.001);
+	int retries=1;
+	int flags=cv::KMEANS_PP_CENTERS;
+	cv::BOWKMeansTrainer bowTrainer(dictionarySize,tc,retries,flags);
+
+// ======================================
+
+	cv::Mat descriptors;
+
+// ===== TRAINING =======================
+	for ( int i = 0; i<3; i++)
+	{
+		char* posfile = ptr_train_pos[i];
+		char* imagefolder = ptrimages[i];
+
+		std::string line;
+
+		std::ifstream position_file (posfile);
+		if( ! position_file )	
+		{
+			std::cout << "Error opening file for reading\n" << std::endl ;
+			return -1 ;
+		}
+
+		int sec;
+		float pos_x, pos_y, yaw;
+		
+		while (position_file >> sec >> pos_x >> pos_y >> yaw)
+		{
+			//search for image taken at the same time
+			char im_path[100];
+			snprintf(im_path, sizeof im_path, "%s/image_%d.png", imagefolder,sec);
+
+			if ( file_exists(im_path)  )
+			{
+				cv::Mat image, descriptors;
+				image = cv::imread(im_path, CV_LOAD_IMAGE_GRAYSCALE);
+
+				std::vector<cv::KeyPoint> keypoints;
+				detector->detect( image, keypoints );
+
+				extractor->compute(image, keypoints, descriptors);
+
+				if(descriptors.rows > 0)
+				{bowTrainer.add(descriptors);}
+
+			}
+		}
+		position_file.close();
+	}
+	cv::Mat dictionary=bowTrainer.cluster();
+
+	cv::BOWImgDescriptorExtractor bowDE(extractor,matcher);
+	bowDE.setVocabulary(dictionary);
+// ======================================
+
+	std::vector<float> bow_vec; 
+
+// ===== BoW FILE =======================
+	for ( int i = 0; i<6; i++)
+	{
+		char* posfile = ptr_make_pos[i];
+		char* imagefolder = ptrimages_make[i];
+		char* descrfile = ptr_make_BoW[i];
+
+		std::ifstream position_file (posfile);
+		if( ! position_file )	
+		{
+			std::cout << "Error opening file for reading\n" << std::endl ;
+			return -1 ;
+		}
+
+		std::ofstream descriptor_file(descrfile);
+		if( ! descriptor_file )	
+		{
+			std::cout << "Error opening file for writing\n" << std::endl ;
+			return -1 ;
+		}
+
+		int sec;
+		float pos_x, pos_y, yaw;
+
+		while (position_file >> sec >> pos_x >> pos_y >> yaw)
+		{
+			//search for image taken at the same time
+			char im_path[100];
+			snprintf(im_path, sizeof im_path, "%s/image_%d.png", imagefolder,sec);
+
+			if (file_exists(im_path))
+			{
+				cv::Mat image, BoWdescriptor;
+				image = cv::imread(im_path, CV_LOAD_IMAGE_GRAYSCALE);
+
+				std::vector<cv::KeyPoint> keypoints;
+
+				detector->detect( image, keypoints );
+
+				bowDE.compute(image,keypoints,BoWdescriptor);
+				if(BoWdescriptor.rows > 0)
+				{
+					bow_vec = BoWdescriptor.row(0);
+					//write in the descriptor file
+					descriptor_file << pos_x << " " << pos_y << " " << yaw << " ";
+					std::ostream_iterator<float> output_iterator(descriptor_file, " ");
+			    	std::copy(bow_vec.begin(), bow_vec.end(), output_iterator);
+					descriptor_file << "\n";
+				}
+
+				image.release();
+				BoWdescriptor.release();
+
+			}
+		}
+		position_file.close();
+		descriptor_file.close();
+	    
+	}
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+// MSER performance evaluation
+
+int main(int argc, char **argv)
+{
+
+	char* source_images[6] = {"src/data_acquisition/data/images/source_arena.png","src/data_acquisition/data/images/source_box.png","src/data_acquisition/data/images/source_change.png","src/data_acquisition/data/images/source_door.png","src/data_acquisition/data/images/source_shelf.png","src/data_acquisition/data/images/source_view.png"};
+
+	char* target_images[6] = {"src/data_acquisition/data/images/target_arena.png","src/data_acquisition/data/images/target_box.png","src/data_acquisition/data/images/target_change.png","src/data_acquisition/data/images/target_door.png","src/data_acquisition/data/images/target_shelf.png","src/data_acquisition/data/images/target_view.png"};
+
+	char* labels[6] = {"ARENA","BOX","CHANGE","DOOR","SHELF","VIEW"};
+
+	std::stringstream absolute_table, relative_table, keypoints_table;
+
+	absolute_table << "absolute;arena;box;change;door;shelf;view\n";
+	relative_table << "\nrelative;arena;box;change;door;shelf;view\n";
+	keypoints_table << "\nkeypoits;arena;box;change;door;shelf;view\n";
+
+	//SIFT detector setting
+	float nFeatures = 0;
+	float nOctaveLayers[5] = {2,3,4,5,10};
+	float contrastThreshold[6] = {.01,.03,.06,.08};
+	float edgeThreshold[6] = {0.8,1.8,3,4,5,10};
+	float sigma[6] = {0.8,1.2,1.6,2.5,3,4};
+
+	//SURF detector setting
+	double 	hessianThreshold[3] = { 400., 500., 600.};
+	int  	octaves[4] = {2,4,8,12};
+	int 	octaveLayers[4] = {15,20,30,40};
+
+	//STAR detector setting
+	int  	maxSize[6] = {20,30,40};
+	int  	responseThreshold[5] = {8,12,16};
+	int  	lineThresholdProjected[5] = {6,10,14};
+	int  	lineThresholdBinarized[5] = {10,20,30};
+	int  	suppressNonmaxSize[6] = {5,10,15};
+
+	//MSER detector setting
+	int  	delta[3] = {3,5,7};
+	int  	minArea[3] = {40,60,80};
+	int  	maxArea[3] = {8000,14400,20000};
+	double  maxVariation[3] = {.5,.8,1.2};
+	double  minDiversity[3] = {.1,.3,.5};
+	int  	maxEvolution[3] = {200,300,400};
+	double  areaThreshold[3] = {0.98,1.01,1.05};
+	double  minMargin[3] = {0.001,.003,.005};
+	int  	edgeBlurSize[3] = {2,3,4};
+
+	//FAST detector setting
+	int  	threshold[8] = {3,5,8,13,15,20,25,30};
+	bool  	nonmaxSuppression[2] = {true,false};
+
+	cv::FeatureDetector* detector;
+
+	cv::DescriptorExtractor* SIFTextractor, *SURFextractor;
+ 	SIFTextractor = new cv::SiftDescriptorExtractor();
+ 	SURFextractor = new cv::SurfDescriptorExtractor();
+
+	cv::DescriptorMatcher *BFmatcher;
+ 	BFmatcher = new cv::BFMatcher();
+
+ 	float statistics[4];
+
+ 	try{
+
+		for ( int delta_i = 0; delta_i < sizeof(delta)/sizeof(delta[0]); delta_i++)
+	 	{
+
+		for ( int minArea_i = 0; minArea_i<sizeof(minArea)/sizeof(minArea[0]); minArea_i++ )
+		{
+		for ( int maxArea_i = 0; maxArea_i<sizeof(maxArea)/sizeof(maxArea[0]); maxArea_i++)
+		{
+		for ( int maxVariation_i = 0; maxVariation_i < sizeof(maxVariation)/sizeof(maxVariation[0]); maxVariation_i++)
+		{
+
+		for ( int minDiversity_i = 0; minDiversity_i<sizeof(minDiversity)/sizeof(minDiversity[0]); minDiversity_i++ )
+		{
+		for ( int maxEvolution_i = 0; maxEvolution_i<sizeof(maxEvolution)/sizeof(maxEvolution[0]); maxEvolution_i++)
+		{
+		for ( int areaThreshold_i = 0; areaThreshold_i < sizeof(areaThreshold)/sizeof(areaThreshold[0]); areaThreshold_i++)
+		{
+
+		for ( int minMargin_i = 0; minMargin_i<sizeof(minMargin)/sizeof(minMargin[0]); minMargin_i++ )
+		{
+		for ( int edgeBlurSize_i = 0; edgeBlurSize_i<sizeof(edgeBlurSize)/sizeof(edgeBlurSize[0]); edgeBlurSize_i++)
+		{
+	 				
+ 					char str[100];
+					snprintf(str, sizeof(str)*sizeof(char*), "SURF(%d, %d, %d, %f, %f, %d, %f, %f, %d);", delta[delta_i],minArea[minArea_i],maxArea[maxArea_i],maxVariation[maxVariation_i],minDiversity[minDiversity_i],maxEvolution[maxEvolution_i],areaThreshold[areaThreshold_i],minMargin[minMargin_i],edgeBlurSize[edgeBlurSize_i]);
+					
+ 					detector = new cv::MserFeatureDetector(delta[delta_i],minArea[minArea_i],maxArea[maxArea_i],maxVariation[maxVariation_i],minDiversity[minDiversity_i],maxEvolution[maxEvolution_i],areaThreshold[areaThreshold_i],minMargin[minMargin_i],edgeBlurSize[edgeBlurSize_i]);
+
+ 					absolute_table << str;
+ 					relative_table << str;
+					keypoints_table << str;
+
+	 				for(int image_i=0; image_i<6; image_i++)
+					{
+						cv::Mat image1, image2, image_result;
+						image1 = cv::imread( source_images[image_i], CV_LOAD_IMAGE_GRAYSCALE );
+					 	image2 = cv::imread( target_images[image_i], CV_LOAD_IMAGE_GRAYSCALE );
+
+						get_statistics_feature_matching(image1, image2, detector, SIFTextractor, BFmatcher, statistics);
+
+						absolute_table << statistics[2] << ";";
+						relative_table << statistics[3] << ";"; 
+						keypoints_table << "(" << statistics[0] << ", " << statistics[1] << ");";
+		 				
+		 			}
+		 			absolute_table <<  "\n";
+					relative_table <<  "\n"; 
+					keypoints_table << "\n";
+				
+			 		}}}}}}
+		 		}
+		 	}
+
+		}
+	}catch(...){
+		std::cout << absolute_table.str();
+		std::cout << relative_table.str();
+		std::cout << keypoints_table.str();
+	}
+
+
+
+	std::cout << absolute_table.str();
+	std::cout << relative_table.str();
+	std::cout << keypoints_table.str();
+
+	
+	return 0;
+}
+
+
+
+/*   descriptor distance file creation       */
+cv::Mat all_descriptors;
+	cv::FeatureDetector *detector;
+	detector = new cv::FastFeatureDetector( 20, true );
+
+		make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_unchanged1_left/positions.txt", "src/data_acquisition/data/processed_data/arena_record_unchanged1_left/images", "src/data_acquisition/data/arena_data_FAST_20/set1_meas1_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set1_meas1_positions.txt", &all_descriptors,  detector);
+
+	make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_unchanged1_right/positions.txt", "src/data_acquisition/data/processed_data/arena_record_unchanged1_right/images", "src/data_acquisition/data/arena_data_FAST_20/set1_meas2_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set1_meas2_positions.txt", &all_descriptors,detector);
+
+	make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_unchanged1_random/positions.txt", "src/data_acquisition/data/processed_data/arena_record_unchanged1_random/images", "src/data_acquisition/data/arena_data_FAST_20/set1_meas3_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set1_meas3_positions.txt", &all_descriptors,  detector);
+
+	make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_unchanged_left/positions.txt", "src/data_acquisition/data/processed_data/arena_record_unchanged_left/images", "src/data_acquisition/data/arena_data_FAST_20/set2_meas1_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set2_meas1_positions.txt", &all_descriptors, detector);
+
+	make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_unchanged_right/positions.txt", "src/data_acquisition/data/processed_data/arena_record_unchanged_right/images", "src/data_acquisition/data/arena_data_FAST_20/set2_meas2_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set2_meas2_positions.txt", &all_descriptors, detector);
+
+	make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_unchanged_random/positions.txt", "src/data_acquisition/data/processed_data/arena_record_unchanged_random/images", "src/data_acquisition/data/arena_data_FAST_20/set2_meas3_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set2_meas3_positions.txt", &all_descriptors, detector);
+
+		make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_changed_left/positions.txt", "src/data_acquisition/data/processed_data/arena_record_changed_left/images", "src/data_acquisition/data/arena_data_FAST_20/set3_meas1_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set3_meas1_positions.txt", &all_descriptors,  detector);
+
+	make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_changed_right/positions.txt", "src/data_acquisition/data/processed_data/arena_record_changed_right/images", "src/data_acquisition/data/arena_data_FAST_20/set3_meas2_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set3_meas2_positions.txt", &all_descriptors,  detector);
+
+	make_descriptor_file("src/data_acquisition/data/processed_data/arena_record_changed_random/positions.txt", "src/data_acquisition/data/processed_data/arena_record_changed_random/images", "src/data_acquisition/data/arena_data_FAST_20/set3_meas3_descriptors.txt", "src/data_acquisition/data/arena_data_FAST_20/set3_meas3_positions.txt", &all_descriptors,  detector);
+
